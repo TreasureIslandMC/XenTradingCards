@@ -1,10 +1,11 @@
-package media.xen.tradingcards;
+package media.xen.tradingcards.managers;
 
 import lombok.Data;
+import media.xen.tradingcards.CardUtil;
+import media.xen.tradingcards.TradingCards;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,13 +23,13 @@ public class CardManager {
 
 	public CardManager(final TradingCards plugin) {
 		CardManager.plugin = plugin;
-		initialize();
+		init();
 	}
 
 	/**
 	 * Pre-loads all existing cards.
 	 */
-	private void initialize() {
+	private void init() {
 		CardManager.blankCard = new ItemStack(Material.getMaterial(plugin.getConfig().getString("General.Card-Material")));
 		for(String rarity: plugin.getCardsConfig().getConfig().getConfigurationSection("Cards").getKeys(false)){
 			for(String name: plugin.getCardsConfig().getConfig().getConfigurationSection("Cards."+rarity).getKeys(false)) {
@@ -72,17 +73,17 @@ public class CardManager {
 		return card;
 	}
 
-	public static class CardBuilder {
+	public static class CardBuilder implements Builder{
 		private final String cardName;
 		private String rarity;
 		private boolean isShiny = false;
 		private boolean isPlayerCard = false;
 		private String rarityColour;
 		private String prefix;
-		private CardInfo series;
-		private CardInfo about;
-		private CardInfo type;
-		private CardInfo info;
+		private ItemInfo series;
+		private ItemInfo about;
+		private ItemInfo type;
+		private ItemInfo info;
 		private String shinyPrefix = null;
 		private String cost;
 
@@ -106,22 +107,22 @@ public class CardManager {
 		}
 
 		public CardBuilder series(String name, String colour, String display){
-			this.series = new CardInfo(name,colour,display);
+			this.series = new ItemInfo(name,colour,display);
 			return this;
 		}
 
 		public CardBuilder about(String name, String colour, String display){
-			this.about = new CardInfo(name,colour,display);
+			this.about = new ItemInfo(name,colour,display);
 			return this;
 		}
 
 		public CardBuilder type(String name, String colour, String display){
-			this.type = new CardInfo(name,colour,display);
+			this.type = new ItemInfo(name,colour,display);
 			return this;
 		}
 
 		public CardBuilder info(String name, String colour, String display){
-			this.info = new CardInfo(name,colour,display);
+			this.info = new ItemInfo(name,colour,display);
 			return this;
 		}
 
@@ -225,12 +226,5 @@ public class CardManager {
 			return plugin.cMsg(StringUtils.replaceEach(title, cardFormat, new String[]{prefix,rarityColour,cardName,cost, " "}));
 		}
 
-	}
-
-	@Data
-	public static class CardInfo {
-		private final String name;
-		private final String colour;
-		private final String display;
 	}
 }

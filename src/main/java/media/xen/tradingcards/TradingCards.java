@@ -8,8 +8,6 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +15,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 
 import media.xen.tradingcards.db.Database;
 import media.xen.tradingcards.db.SQLite;
@@ -29,6 +26,7 @@ import media.xen.tradingcards.listeners.DropListener;
 import media.xen.tradingcards.listeners.MobArenaListener;
 import media.xen.tradingcards.listeners.MythicMobsListener;
 import media.xen.tradingcards.listeners.TownyListener;
+import media.xen.tradingcards.managers.CardManager;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +35,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -44,14 +43,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -61,10 +54,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-
-import javax.smartcardio.Card;
 
 public class TradingCards extends JavaPlugin implements Listener, CommandExecutor {
 	List<EntityType> hostileMobs = new ArrayList<>();
@@ -839,8 +829,7 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 		}
 	}
 
-
-
+	@Deprecated
 	public ItemStack createBoosterPack(String name) {
 		ItemStack boosterPack = this.getBlankBoosterPack();
 		int numNormalCards = this.getConfig().getInt("BoosterPacks." + name + ".NumNormalCards");

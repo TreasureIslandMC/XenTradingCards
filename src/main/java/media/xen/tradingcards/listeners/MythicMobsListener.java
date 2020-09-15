@@ -2,7 +2,6 @@ package media.xen.tradingcards.listeners;
 
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import media.xen.tradingcards.CardManager;
 import media.xen.tradingcards.CardUtil;
 import media.xen.tradingcards.TradingCards;
 import org.bukkit.configuration.ConfigurationSection;

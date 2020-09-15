@@ -1,8 +1,7 @@
 package media.xen.tradingcards.listeners;
 
 
-import com.garbagemule.MobArena.framework.Arena;
-import media.xen.tradingcards.CardManager;
+import media.xen.tradingcards.managers.CardManager;
 import media.xen.tradingcards.CardUtil;
 import media.xen.tradingcards.TradingCards;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
