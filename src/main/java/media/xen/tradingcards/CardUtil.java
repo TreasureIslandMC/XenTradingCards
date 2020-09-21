@@ -169,6 +169,7 @@ public class CardUtil {
 		String cardName = cardNames.get(cIndex);
 		return CardManager.getCard(cardName,rarityName);
 	}
+
 	public static String getCardName(String rarity, String display) {
 		boolean hasPrefix = false;
 		String prefix = "";

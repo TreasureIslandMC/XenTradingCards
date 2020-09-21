@@ -37,13 +37,16 @@ public class SimpleConfig {
 	}
 
 	public void saveConfig(){
-		if (this.config != null && file != null) {
-			try {
-				config.save(file);
-			} catch (IOException var2) {
-				plugin.getLogger().warning(var2.getMessage());
-			}
+		if(this.config == null)
+			return;
 
+		if(file == null)
+			return;
+
+		try {
+			config.save(file);
+		} catch (IOException ex) {
+			plugin.getLogger().warning(ex.getMessage());
 		}
 	}
 

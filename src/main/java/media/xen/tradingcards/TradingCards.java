@@ -6,62 +6,29 @@ import com.garbagemule.MobArena.framework.ArenaMaster;
 
 import java.io.File;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import media.xen.tradingcards.db.Database;
-import media.xen.tradingcards.db.SQLite;
-import media.xen.tradingcards.listeners.AddOnJoinListener;
-import media.xen.tradingcards.listeners.DeckListener;
-import media.xen.tradingcards.listeners.MobSpawnListener;
-import media.xen.tradingcards.listeners.PackListener;
-import media.xen.tradingcards.listeners.DropListener;
-import media.xen.tradingcards.listeners.MobArenaListener;
-import media.xen.tradingcards.listeners.MythicMobsListener;
-import media.xen.tradingcards.listeners.TownyListener;
+import media.xen.tradingcards.db.*;
+import media.xen.tradingcards.listeners.*;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.apache.commons.lang.*;
+import org.bukkit.*;
+import org.bukkit.command.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
+import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scheduler.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.smartcardio.Card;
@@ -72,7 +39,7 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 	List<EntityType> neutralMobs = new ArrayList<>();
 	List<EntityType> bossMobs = new ArrayList<>();
 	private final Map<String, Database> databases = new HashMap<>();
-	public static Permission permRarities = new Permission("cards.rarity");
+	public static Permission permRarities;
 	public ArenaMaster am;
 	boolean hasVault;
 	public boolean hasMobArena;
@@ -81,6 +48,10 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 	private SimpleConfig cardsConfig;
 	private boolean usingSqlite;
 	private boolean hasMythicMobs;
+
+	public TradingCards(){
+		permRarities = new Permission("cards.rarity");
+	}
 
 
 	public SimpleConfig getDeckConfig() {
@@ -1039,12 +1010,23 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 			}
 		}
 
+		//Override for Boss Chances Drop Rarity
+		if (this.getConfig().getBoolean("Chances.Boss-Drop") && this.isMobBoss(e))
+		{
+			return this.getConfig().getString("Chances.Boss-Drop-Rarity");
+		}
+
 		return "None";
 	}
 
 	public boolean isOnList(Player p) {
 		List<String> playersOnList = this.getConfig().getStringList("Blacklist.Players");
 		return playersOnList.contains(p.getName());
+	}
+
+	public boolean isOnList(World world){
+		List<String> worldsOnList = this.getConfig().getStringList("World-Blacklist");
+		return worldsOnList.contains(world.getName());
 	}
 
 	public void addToList(Player p) {

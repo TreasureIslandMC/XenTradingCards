@@ -5,78 +5,121 @@ import com.garbagemule.MobArena.framework.Arena;
 import media.xen.tradingcards.CardManager;
 import media.xen.tradingcards.CardUtil;
 import media.xen.tradingcards.TradingCards;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class DropListener extends SimpleListener {
-	private List<String> worlds;
 	public DropListener(final TradingCards plugin) {
 		super(plugin);
-		worlds = plugin.getConfig().getStringList("World-Blacklist");
 	}
 
+	//When a player is killed, he can drop a card
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (plugin.getConfig().getBoolean("General.Player-Drops-Card") && plugin.getConfig().getBoolean("General.Auto-Add-Players")) {
-			Player player = e.getEntity().getKiller();
-			if (player != null) {
-				ConfigurationSection rarities = plugin.getConfig().getConfigurationSection("Rarities");
-				Set<String> rarityKeys = rarities.getKeys(false);
-				String k = null;
+		boolean canPlayerDropCards = plugin.getConfig().getBoolean("General.Player-Drops-Card");
+		boolean automaticallyAddPlayerAsCards = plugin.getConfig().getBoolean("General.Auto-Add-Players");
+		int playerCardDropRarity = plugin.getConfig().getInt("General.Player-Drops-Card-Rarity");
 
-				for (final String key : rarityKeys) {
-					if(plugin.getCardsConfig().getConfig().contains("Cards." + key + "." + e.getEntity().getName())) {
-						plugin.debug(key);
-						k = key;
-					}
-				}
-
-				if (k != null) {
-					int rndm = plugin.r.nextInt(100) + 1;
-					if (rndm <= plugin.getConfig().getInt("General.Player-Drops-Card-Rarity")) {
-						e.getDrops().add(CardManager.getCard(e.getEntity().getName(),k));
-						plugin.debug(e.getDrops().toString());
-					}
-				} else {
-					plugin.getLogger().info("k is null");
-				}
-			}
-		}
-
-	}
-
-	@EventHandler
-	public void onEntityDeath(EntityDeathEvent e) {
-		final Player p = e.getEntity().getKiller();
-		if(p == null)
+		if(!canPlayerDropCards || !automaticallyAddPlayerAsCards)
 			return;
 
-		boolean drop = ((!plugin.isOnList(p) || plugin.blacklistMode() != 'b') && ((!plugin.isOnList(p) && plugin.blacklistMode() == 'b') || (plugin.isOnList(p) && plugin.blacklistMode() == 'w')));
-		String worldName = e.getEntity().getLocation().getWorld().getName();
-		if (drop && !worlds.contains(worldName)) {
+		final Player killedPlayer = e.getEntity();
+		final Player killer = killedPlayer.getKiller();
 
-			String rare = plugin.calculateRarity(e.getEntityType(), false);
-			if (plugin.getConfig().getBoolean("Chances.Boss-Drop") && plugin.isMobBoss(e.getEntityType())) rare = plugin.getConfig().getString("Chances.Boss-Drop-Rarity");
-			boolean cancelled = false;
+		if (killer == null)
+			return;
 
-			if (!rare.equals("None")) {
-				if (plugin.getConfig().getBoolean("General.Spawner-Block") && e.getEntity().getCustomName() != null && e.getEntity().getCustomName().equals(plugin.getConfig().getString("General.Spawner-Mob-Name"))) {
+		int rndm = plugin.r.nextInt(100) + 1;
+		if (rndm > playerCardDropRarity)
+			return;
 
-					plugin.debug("Mob came from spawner, not dropping card.");
-					cancelled = true;
-				}
-				if (!cancelled) {
-					plugin.debug("Successfully generated card.");
-					e.getDrops().add(CardUtil.getRandomCard(rare, false));
-				}
+		String rarityKey = getRarityKey(killedPlayer);
+		if(rarityKey == null)
+			return;
+
+		ItemStack playerCard = CardManager.getCard(killedPlayer.getName(),rarityKey);
+		e.getDrops().add(playerCard);
+		plugin.debug(e.getDrops().toString());
+	}
+
+	//When a LivingEntity dies, it can drop a card
+	@EventHandler
+	public void onEntityDeath(EntityDeathEvent e) {
+		final LivingEntity killedEntity = e.getEntity();
+		final Player killer = killedEntity.getKiller();
+		final World world = killedEntity.getWorld();
+
+		//Do Validations
+		if(killer == null) return;
+		if(!isAllowed(killer)) return;
+		if(!isAllowed(world)) return;
+		if(isSpawnerMob(killedEntity)) return;
+
+		//Get card rarity
+		String rarityName = plugin.calculateRarity(e.getEntityType(), false);
+		if (rarityName.equals("None"))
+			return;
+
+		//Generate the card
+		ItemStack randomCard = CardUtil.getRandomCard(rarityName, false);
+		plugin.debug("Successfully generated card.");
+
+		//Add the card to the killedEntity drops
+		e.getDrops().add(randomCard);
+	}
+
+	private boolean isAllowed(Player player){
+		//If the player is blacklisted
+		if(plugin.blacklistMode() == 'b' && plugin.isOnList(player))
+			return false;
+
+		//If the player is not whitelisted
+		return plugin.blacklistMode() != 'w' || plugin.isOnList(player);
+	}
+
+	private boolean isAllowed(World world){
+		//If the world is blacklisted
+		return !plugin.isOnList(world);
+	}
+
+	private boolean isSpawnerMob(LivingEntity killedEntity){
+		String customName = killedEntity.getCustomName();
+		boolean spawnerDropBlocked = plugin.getConfig().getBoolean("General.Spawner-Block");
+		String spawnerMobName = plugin.getConfig().getString("General.Spawner-Mob-Name");
+
+		if (spawnerDropBlocked && customName != null && customName.equals(spawnerMobName)) {
+			plugin.debug("Mob came from spawner, not dropping card.");
+			return true;
+		}
+
+		return false;
+	}
+
+	private String getRarityKey(Player player){
+		ConfigurationSection rarities = plugin.getConfig().getConfigurationSection("Rarities");
+		if(rarities == null)
+			return null;
+
+		Set<String> rarityKeys = rarities.getKeys(false);
+
+		for (final String key : rarityKeys) {
+			if(plugin.getCardsConfig().getConfig().contains("Cards." + key + "." + player.getName())) {
+				plugin.debug(key);
+				return key;
 			}
 		}
+
+		plugin.getLogger().info("rarityKey is null");
+		return null;
 	}
 }
