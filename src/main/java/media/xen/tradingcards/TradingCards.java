@@ -1,14 +1,11 @@
 package media.xen.tradingcards;
 
 import co.aikar.commands.BukkitCommandManager;
-import com.garbagemule.MobArena.MobArena;
-import com.garbagemule.MobArena.framework.ArenaMaster;
 
 import java.io.File;
 import java.util.*;
 
 import lombok.val;
-import media.xen.tradingcards.db.*;
 import media.xen.tradingcards.listeners.*;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -36,6 +33,8 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 	private SimpleConfig deckConfig;
 	private SimpleConfig messagesConfig;
 	private SimpleConfig cardsConfig;
+	private SimpleConfig playerBlacklistConfig;
+	private SimpleConfig worldBlacklistConfig;
 
 	public TradingCards(){
 		permRarities = new Permission("cards.rarity");
@@ -45,15 +44,16 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 	public SimpleConfig getDeckConfig() {
 		return deckConfig;
 	}
-
 	public SimpleConfig getMessagesConfig() {
 		return messagesConfig;
 	}
-
 	public SimpleConfig getCardsConfig() {
 		return cardsConfig;
 	}
-
+	public SimpleConfig getPlayerBlacklistConfig() {
+		return playerBlacklistConfig;
+	}
+	public SimpleConfig getWorldBlacklistConfig() { return worldBlacklistConfig; }
 
 	public static Economy econ = null;
 	public static Permission perms = null;
@@ -61,11 +61,9 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 	public Random r = new Random();
 	int taskId;
 
-	private void registerListeners() {
-		val playerBlacklist = new PlayerBlacklist(this.getConfig());
-		val worldBlacklist = new WorldBlacklist(this.getConfig());
-		val dropListener = new DropListener(this, playerBlacklist, worldBlacklist);
+	private void registerListeners(PlayerBlacklist playerBlacklist, WorldBlacklist worldBlacklist) {
 
+		val dropListener = new DropListener(this, playerBlacklist, worldBlacklist);
 		PluginManager pm = Bukkit.getPluginManager();
 
 		pm.addPermission(permRarities);
@@ -73,13 +71,19 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 		pm.registerEvents(dropListener, this);
 		pm.registerEvents(new PackListener(this), this);
 		pm.registerEvents(new DeckListener(this), this);
-		hookMythicMobs();
-		hookMobArena();
-		hookTowny();
 	}
 
 	@Override
 	public void onEnable() {
+		val playerBlacklist = new PlayerBlacklist(getPlayerBlacklistConfig());
+		val worldBlacklist = new WorldBlacklist(getWorldBlacklistConfig());
+
+		deckConfig = new SimpleConfig(this, "decks.yml");
+		messagesConfig = new SimpleConfig(this, "messages.yml");
+		cardsConfig = new SimpleConfig(this, "cards.yml");
+		playerBlacklistConfig = new SimpleConfig(this, "playerBlacklist.yml");
+		worldBlacklistConfig = new SimpleConfig(this, "worldBlacklist.yml");
+
 		String serverVersion = Bukkit.getServer().getVersion();
 		List<EntityType> safeHostileMobs = Arrays.asList(EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.ZOMBIE, EntityType.SKELETON, EntityType.CREEPER, EntityType.BLAZE, EntityType.SILVERFISH, EntityType.GHAST, EntityType.SLIME, EntityType.EVOKER, EntityType.VINDICATOR, EntityType.VEX, EntityType.SHULKER, EntityType.GUARDIAN, EntityType.MAGMA_CUBE, EntityType.ELDER_GUARDIAN, EntityType.STRAY, EntityType.HUSK, EntityType.DROWNED, EntityType.WITCH, EntityType.ZOGLIN, EntityType.HOGLIN, EntityType.ZOMBIE_VILLAGER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.ENDERMITE);
 		List<EntityType> safeNeutralMobs = Arrays.asList(EntityType.ENDERMAN, EntityType.POLAR_BEAR, EntityType.LLAMA, EntityType.WOLF, EntityType.BEE, EntityType.DOLPHIN, EntityType.PANDA, EntityType.PIGLIN, EntityType.ZOMBIFIED_PIGLIN, EntityType.DOLPHIN, EntityType.SNOWMAN, EntityType.IRON_GOLEM);
@@ -89,6 +93,7 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 		this.neutralMobs.addAll(safeNeutralMobs);
 		this.passiveMobs.addAll(safePassiveMobs);
 		this.bossMobs.addAll(safeBossMobs);
+
 		// Previous version compatibility
 		if (serverVersion.contains("1.14") || serverVersion.contains("1.15") || serverVersion.contains("1.16")) {
 			this.neutralMobs.add(EntityType.PANDA);
@@ -115,23 +120,20 @@ public class TradingCards extends JavaPlugin implements Listener, CommandExecuto
 				getLogger().info("Legacy 1.14 mode enabled! Consider upgrading though <3");
 			}
 		}
-		registerListeners();
+		registerListeners(playerBlacklist, worldBlacklist);
 		this.saveDefaultConfig();
-		deckConfig = new SimpleConfig(this, "decks.yml");
-		messagesConfig = new SimpleConfig(this, "messages.yml");
-		cardsConfig = new SimpleConfig(this, "cards.yml");
 
 		deckConfig.saveDefaultConfig();
 		messagesConfig.saveDefaultConfig();
 		cardsConfig.saveDefaultConfig();
+		playerBlacklistConfig.saveDefaultConfig();
+		worldBlacklistConfig.saveDefaultConfig();
 
 		new CardUtil(this);
 		new CardManager(this);
 		BukkitCommandManager commandManager = new BukkitCommandManager(this);
-		commandManager.registerCommand(new CardsCommand(this));
+		commandManager.registerCommand(new CardsCommand(this, playerBlacklist));
 		commandManager.enableUnstableAPI("help");
-		hookFileSystem();
-		hookVault();
 
 		if (this.getConfig().getBoolean("General.Schedule-Cards")) {
 			this.startTimer();

@@ -30,9 +30,13 @@ import static media.xen.tradingcards.TradingCards.sendMessage;
 public class CardsCommand extends BaseCommand {
 	private final TradingCards plugin;
 	private final boolean showUsage;
+	private PlayerBlacklist playerBlacklist;
 
-	public CardsCommand(final TradingCards plugin) {
+	public CardsCommand(
+			final TradingCards plugin,
+			final PlayerBlacklist playerBlacklist) {
 		this.plugin = plugin;
+		this.playerBlacklist = playerBlacklist;
 		this.showUsage = plugin.getConfig().getBoolean("General.Show-Command-Usage", true);
 	}
 
@@ -67,10 +71,10 @@ public class CardsCommand extends BaseCommand {
 		sendHelpMessage(sender, "cards.listpacks", "Messages.ListPacksUsage", "Messages.ListPacksHelp");
 		sendHelpMessage(sender, "cards.toggle", "Messages.ToggleUsage", "Messages.ToggleHelp");
 		sendHelpMessage(sender, "cards.create", "Messages.CreateUsage", "Messages.CreateHelp");
-		if (plugin.hasVault) {
+		/*if (plugin.hasVault) {
 			sendHelpMessage(sender, "cards.buy", "Messages.BuyUsage", "Messages.BuyHelp");
 			sendHelpMessage(sender, "cards.worth", "Messages.WorthUsage", "Messages.WorthHelp");
-		}
+		}*/
 		sendHelpMessage(sender, "cards.resolve", "Messages.ResolveUsage", "Messages.ResolveHelp");
 		sendHelpMessage(sender, "cards.reward", "Messages.RewardUsage", "Messages.RewardHelp");
 	}
@@ -123,17 +127,12 @@ public class CardsCommand extends BaseCommand {
 	@CommandAlias("toggle")
 	@CommandPermission("cards.toggle")
 	public void onToggle(final Player player) {
-		if (plugin.isOnList(player) && plugin.blacklistMode() == 'b') {
-			plugin.removeFromList(player);
+		if(playerBlacklist.isAllowed(player)){
+			playerBlacklist.remove(player);
 			sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.ToggleEnabled")));
-		} else if (plugin.isOnList(player) && plugin.blacklistMode() == 'w') {
-			plugin.removeFromList(player);
-			sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.ToggleDisabled")));
-		} else if (!plugin.isOnList(player) && plugin.blacklistMode() == 'b') {
-			plugin.addToList(player);
-			sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.ToggleDisabled")));
-		} else if (!plugin.isOnList(player) && plugin.blacklistMode() == 'w') {
-			plugin.addToList(player);
+		}
+		else{
+			playerBlacklist.add(player);
 			sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.ToggleEnabled")));
 		}
 	}
@@ -626,7 +625,7 @@ public class CardsCommand extends BaseCommand {
 
 
 
-	@CommandAlias("worth")
+	/*@CommandAlias("worth")
 	@CommandPermission("cards.worth")
 	public void onWorth(final Player player) {
 		if (!hasVault(player)) {
@@ -681,17 +680,17 @@ public class CardsCommand extends BaseCommand {
 			sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.CanNotBuy"));
 		}
 
-	}
+	}*/
 
-	private boolean hasVault(final Player player) {
+	/*private boolean hasVault(final Player player) {
 		if (!plugin.hasVault) {
 			sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.NoVault")));
 		}
 		return plugin.hasVault;
-	}
+	}*/
 
 
-	@Subcommand("buy")
+	/*@Subcommand("buy")
 	@CommandPermission("cards.buy")
 	public class BuySubCommand extends BaseCommand {
 
@@ -761,7 +760,7 @@ public class CardsCommand extends BaseCommand {
 			}
 			sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.NotEnoughMoney"));
 		}
-	}
+	}*/
 }
 
 

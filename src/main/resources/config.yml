@@ -66,14 +66,7 @@ General:
   # DO NOT USE
   SQLite: false
 
-World-Blacklist:
-  # Don't want cards dropping in certain worlds? Add it here!
-  - Creative
 
-Blacklist:
-  Whitelist-Mode: false
-  Players:
-    - Herobrine
 
 PluginSupport:
   Towny:

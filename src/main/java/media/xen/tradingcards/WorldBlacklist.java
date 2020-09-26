@@ -9,7 +9,9 @@ import java.util.List;
 public class WorldBlacklist {
     private SimpleConfig config;
     private String listedWorldsName = "World-Blacklist";
+    private String whitelistModeName = "Whitelist-Mode";
     private List<String> listedWorlds;
+    private WhitelistMode whitelistMode;
 
     public WorldBlacklist(SimpleConfig config){
         this.config = config;
@@ -20,11 +22,31 @@ public class WorldBlacklist {
         listedWorlds = this.config.getConfig().getStringList(listedWorldsName);
     }
 
+    private void setWhitelistMode()
+    {
+        boolean isWhitelist = this.config.getConfig().getBoolean(whitelistModeName);
+        if(isWhitelist)
+            this.whitelistMode = WhitelistMode.Whitelist;
+        else
+            this.whitelistMode = WhitelistMode.Blacklist;
+    }
+
     public boolean isAllowed(World w) {
         boolean isOnList = listedWorlds.contains(w.getName());
 
         //If you're not on the blacklist, you're allowed
-        return !isOnList;
+        if(this.whitelistMode == WhitelistMode.Blacklist)
+        {
+            return !isOnList;
+        }
+
+        //If you're on the whitelist, you're allowed
+        if(this.whitelistMode == WhitelistMode.Whitelist)
+        {
+            return isOnList;
+        }
+
+        return false;
     }
 
     public void add(World w) {
