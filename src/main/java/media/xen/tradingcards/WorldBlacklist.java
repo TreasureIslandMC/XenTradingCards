@@ -8,7 +8,7 @@ import java.util.List;
 
 public class WorldBlacklist {
     private SimpleConfig config;
-    private String listedWorldsName = "World-Blacklist";
+    private String listedWorldsName = "Worlds";
     private String whitelistModeName = "Whitelist-Mode";
     private List<String> listedWorlds;
     private WhitelistMode whitelistMode;
