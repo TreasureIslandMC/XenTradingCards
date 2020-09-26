@@ -26,7 +26,7 @@ public class CardUtil {
 	public CardUtil(final TradingCards plugin) {
 		CardUtil.plugin = plugin;
 	}
-
+/*
 	public String upgradeRarity(String packName, String rarity) {
 		plugin.debug("Starting booster pack upgrade check - Current rarity is " + rarity + "!");
 		ConfigurationSection rarities = plugin.getConfig().getConfigurationSection("Rarities");
@@ -58,7 +58,7 @@ public class CardUtil {
 	public static String calculateRarity(){
 		return null;
 	}
-
+*/
 	/**
 	 * Drops an item at the player's location.
 	 *

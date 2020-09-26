@@ -6,27 +6,22 @@ import co.aikar.commands.annotation.CatchUnknown;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.HelpCommand;
-import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Subcommand;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static media.xen.tradingcards.TradingCards.econ;
 import static media.xen.tradingcards.TradingCards.sendMessage;
@@ -107,7 +102,11 @@ public class CardsCommand extends BaseCommand {
 	@CommandAlias("rarities")
 	@CommandPermission("cards.list.rarities")
 	public void onRarities(final CommandSender sender) {
-		final List<String> rarities = new ArrayList<>(plugin.getCardsConfig().getConfig().getConfigurationSection("Cards").getKeys(false));
+		ConfigurationSection cardsConfigSection = plugin.getCardsConfig().getConfig().getConfigurationSection("Cards");
+		if(cardsConfigSection == null)
+			return;
+
+		final List<String> rarities = new ArrayList<>(cardsConfigSection.getKeys(false));
 		sender.sendMessage(StringUtils.join(rarities, ", "));
 	}
 
@@ -115,7 +114,10 @@ public class CardsCommand extends BaseCommand {
 	@CommandAlias("resolve")
 	@CommandPermission("cards.resolve")
 	public void onResolve(final CommandSender sender, final Player player) {
-		sendMessage(sender, plugin.getMessagesConfig().getConfig().getString("Messages.ResolveMsg").replaceAll("%name%", player.getName()).replaceAll("%uuid%", player.getUniqueId().toString()));
+		String resolveMessageTemplate = plugin.getMessagesConfig().getConfig().getString("Messages.ResolveMsg");
+		if(resolveMessageTemplate == null)
+			return;
+		sendMessage(sender, resolveMessageTemplate.replaceAll("%name%", player.getName()).replaceAll("%uuid%", player.getUniqueId().toString()));
 	}
 
 	@CommandAlias("toggle")
@@ -138,8 +140,8 @@ public class CardsCommand extends BaseCommand {
 
 	@CommandAlias("create")
 	@CommandPermission("cards.create")
-	public void onCreate(final Player player, final String rarity, final String name, final String series, final String type, final boolean shiny, final String info, final String about) {
-		plugin.createCard(player, rarity.replaceAll("_", " "), name, series.replaceAll("_", " "), type.replaceAll("_", " "), shiny, info.replaceAll("_", " "), about.replaceAll("_", " "));
+	public void onCreate(final Player player, final String rarity, final String name, final String series, final String type, final boolean shiny, final String info) {
+		plugin.createCard(player, rarity.replaceAll("_", " "), name, series.replaceAll("_", " "), type.replaceAll("_", " "), shiny, info.replaceAll("_", " "));
 	}
 
 	@CommandAlias("givecard")
@@ -163,7 +165,7 @@ public class CardsCommand extends BaseCommand {
 		sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.NoCard")));
 
 	}
-
+/*
 	@CommandAlias("giveboosterpack")
 	@CommandPermission("cards.giveboosterpack")
 	public void onGiveBoosterpack(final CommandSender sender, final Player player, final String boosterpack) {
@@ -181,12 +183,11 @@ public class CardsCommand extends BaseCommand {
 		}
 
 	}
-
+*/
 	private void sendPrefixedMessage(final CommandSender toWhom, final String message) {
 		sendMessage(toWhom, plugin.getPrefixedMessage(message));
 	}
-
-
+/*
 	@CommandAlias("modules")
 	@CommandPermission("cards.admin.modules")
 	public void onModules(final CommandSender sender){
@@ -637,12 +638,16 @@ public class CardsCommand extends BaseCommand {
 		}
 
 		ItemStack itemInHand = player.getInventory().getItemInMainHand();
-		final String keyToUse = itemInHand.getItemMeta().getDisplayName();
+		ItemMeta itemInHandMeta = itemInHand.getItemMeta();
+		if(itemInHandMeta == null)
+			return;
+
+		final String keyToUse = itemInHandMeta.getDisplayName();
 		plugin.debug(keyToUse);
 		plugin.debug(ChatColor.stripColor(keyToUse));
 
 		String[] splitName = ChatColor.stripColor(keyToUse).split(" ");
-		String cardName2 = "";
+		String cardName2;
 		if (splitName.length > 1) {
 			cardName2 = splitName[1];
 		} else {
@@ -652,6 +657,9 @@ public class CardsCommand extends BaseCommand {
 
 
 		List<String> lore = itemInHand.getItemMeta().getLore();
+		if(lore == null)
+			return;
+
 		String rarity = ChatColor.stripColor(lore.get(3));
 		plugin.debug(rarity);
 
@@ -665,7 +673,10 @@ public class CardsCommand extends BaseCommand {
 		}
 
 		if (canBuy) {
-			sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.CanBuy").replaceAll("%buyAmount%", String.valueOf(buyPrice)));
+			String canBuyMessageTemplate = plugin.getMessagesConfig().getConfig().getString("Messages.CanBuy");
+			if(canBuyMessageTemplate == null)
+				return;
+			sendPrefixedMessage(player, canBuyMessageTemplate.replaceAll("%buyAmount%", String.valueOf(buyPrice)));
 		} else {
 			sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.CanNotBuy"));
 		}
@@ -675,9 +686,8 @@ public class CardsCommand extends BaseCommand {
 	private boolean hasVault(final Player player) {
 		if (!plugin.hasVault) {
 			sendMessage(player, plugin.getPrefixedMessage(plugin.getMessagesConfig().getConfig().getString("Messages.NoVault")));
-			return false;
 		}
-		return true;
+		return plugin.hasVault;
 	}
 
 
@@ -708,7 +718,12 @@ public class CardsCommand extends BaseCommand {
 				if (plugin.getConfig().getBoolean("PluginSupport.Vault.Closed-Economy")) {//TODO
 					econ.bankDeposit(plugin.getConfig().getString("PluginSupport.Vault.Server-Account"), buyPrice2);
 				}
-				sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.BoughtCard").replaceAll("%amount%", String.valueOf(buyPrice2)));
+
+				String boughtCardMessageTemplate = plugin.getMessagesConfig().getConfig().getString("Messages.BoughtCard");
+				if(boughtCardMessageTemplate == null)
+					return;
+
+				sendPrefixedMessage(player, boughtCardMessageTemplate.replaceAll("%amount%", String.valueOf(buyPrice2)));
 				CardUtil.dropItem(player, plugin.createBoosterPack(name));
 				return;
 			}
@@ -737,7 +752,11 @@ public class CardsCommand extends BaseCommand {
 					econ.bankDeposit(plugin.getConfig().getString("PluginSupport.Vault.Server-Account"), buyPrice2);
 				}
 				CardUtil.dropItem(player, CardManager.getCard(card, rarity));
-				sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.BoughtCard").replaceAll("%amount%", String.valueOf(buyPrice2)));
+				String boughtCardMessageTemplate = plugin.getMessagesConfig().getConfig().getString("Messages.BoughtCard");
+				if(boughtCardMessageTemplate == null)
+					return;
+
+				sendPrefixedMessage(player, boughtCardMessageTemplate.replaceAll("%amount%", String.valueOf(buyPrice2)));
 				return;
 			}
 			sendPrefixedMessage(player, plugin.getMessagesConfig().getConfig().getString("Messages.NotEnoughMoney"));
