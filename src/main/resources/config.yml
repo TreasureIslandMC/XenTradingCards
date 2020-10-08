@@ -64,6 +64,20 @@ General:
   # DO NOT USE
   SQLite: false
 
+experimental:
+  use-oraxen: false
+  card-material:
+    common: idhere
+    uncommon: idhere
+    rare: idhere
+    legendary: idhere
+  deck-material: idhere
+  pack-material:
+    starter-pack: idhere
+    advanced-pack: idhere
+    expert-pack: idhere
+    ultimate-pack: idhere
+
 World-Blacklist:
   # Don't want cards dropping in certain worlds? Add it here!
   - Creative
