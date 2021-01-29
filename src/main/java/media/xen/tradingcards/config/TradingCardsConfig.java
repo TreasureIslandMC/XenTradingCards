@@ -5,12 +5,10 @@ import net.sarhatabaot.configloader.Config;
 import net.sarhatabaot.configloader.ConfigOption;
 import net.sarhatabaot.configloader.transform.ListClone;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class TradingCardsConfig implements Config {
 	private final File file;
 
 	public TradingCardsConfig(final TradingCards plugin) {
-		this.file = new File(plugin.getDataFolder(),"config.yml");
+		this.file = new File(plugin.getDataFolder(), "config-old.yml");
 		TradingCardsConfig.plugin = plugin;
 	}
 

@@ -309,7 +309,7 @@ public class CardUtil {
 		return "Boss";
 
 	}
-	//TODO This guy is responsible for the drop rate..
+	//TODO This guy is responsible for the drop rate.. Really confusing, should use a "weight" system instead
 
 	/**
 	 * Returns the rarity that should drop.

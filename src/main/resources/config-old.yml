@@ -1,0 +1,205 @@
+General:
+  # Server name?
+  Server-Name: "Server"
+  # Show debug messages?
+  Debug-Mode: false
+  # If your server is not running the latest MC version, set this to FALSE
+  Hide-Enchants: true
+  # Whether we should use American date format (07/12/15) or English date format (12/07/15)
+  American-Mode: false
+  # The material the card will be. Make this something useless for maximum effect.
+  Card-Material: PAPER
+  # The prefix of the card. This is optional. Will show like: [Trading Card] Zombie
+  Card-Prefix: "&7[&fCard&7]&f "
+  # What material booster packs should be. Make it something that can't be placed.
+  BoosterPack-Material: BOOK
+  # The prefix of the booster pack.
+  BoosterPack-Prefix: "&7[&fPack&7]&f "
+  # Should we be allowed to use decks in creative?
+  Decks-In-Creative: false
+  # Should we get a deck item or simply open the deck straight away with /cards getdeck #?
+  Use-Deck-Item: true
+  # Should we have 27 slots in the deck, or 54 (double chest)?
+  Use-Large-Decks: false
+  # What material decks should be. Make it something that can't be placed.
+  Deck-Material: BOOK
+  # The prefix of the booster pack.
+  Deck-Prefix: "&7[&fDeck&7]&f "
+  # What shiny cards should be prefixed with.
+  Shiny-Name: "Shiny"
+  # Should a random card be given out every so often to all players online?
+  Schedule-Cards: false
+  # Should the cards scheduled be 'natural', as in, the same chance as if a mob dropped the card, or a single rarity?
+  Schedule-Cards-Natural: false
+  # If schedule-cards-natural is true, what mob should we use for the giveaway? Zombie will drop the hostile mob chances, Wither boss chances etc.
+  Schedule-Card-Mob: ZOMBIE
+  # If schedule-cards-natural is false, what should the giveaway rarity be?
+  Schedule-Card-Rarity: Common
+  Schedule-Card-Time-In-Hours: 1
+  # Should we block cards for mobs from monster spawners?
+  Spawner-Block: true
+  # In the case of 'true', what should we name the monster with to identify it's from a spawner?
+  Spawner-Mob-Name: 'Spawned Mob'
+  # Should we automatically add players as cards?
+  Auto-Add-Players: false
+  Auto-Add-Player-Rarity: Common
+  Player-Op-Rarity: Legendary
+  Player-Series: "2020"
+  Player-Type: "Player"
+  Player-Has-Shiny-Version: true
+  # Should the player drop their own card if they're killed in PvP?
+  Player-Drops-Card: true
+  # Percent of the time where the player drops the card, if the above is true.
+  Player-Drops-Card-Rarity: 100
+  # How 'long' should each line of the card's info be?
+  Info-Line-Length: 25
+  # Should we drop items in decks that aren't cards? (if false, it will delete the item)
+  Drop-Deck-Items: true
+  # Should we allow the collection of rewards for collecting a whole rarity?
+  Allow-Rewards: true
+  # Should we broadcast to the server when someone's collected a reward?
+  Reward-Broadcast: true
+  # Should we take shiny cards into account at all when collecting a reward? (recommended false, shiny cards are very rare!)
+  Eat-Shiny-Cards: false
+  # DO NOT USE
+  SQLite: false
+
+World-Blacklist:
+  # Don't want cards dropping in certain worlds? Add it here!
+  - Creative
+
+Blacklist:
+  Whitelist-Mode: false
+  Players:
+    - Herobrine
+
+PluginSupport:
+  Vault:
+    Vault-Enabled: true
+    # Is the server running a closed economy? if so, whose account should money go into?
+    Closed-Economy: false
+    Server-Account: TradingCards-Bank
+
+BoosterPacks:
+  Starter_Pack:
+    NumNormalCards: 9
+    NormalCardRarity: Common
+    NumSpecialCards: 1
+    SpecialCardRarity: Rare
+    Price: 100.00
+  Advanced_Pack:
+    NumNormalCards: 12
+    NormalCardRarity: Common
+    NumExtraCards: 6
+    ExtraCardRarity: Uncommon
+    NumSpecialCards: 2
+    SpecialCardRarity: Rare
+    Price: 150.00
+  Expert_Pack:
+    NumNormalCards: 6
+    NormalCardRarity: Uncommon
+    NumExtraCards: 4
+    ExtraCardRarity: Rare
+    NumSpecialCards: 2
+    SpecialCardRarity: Very Rare
+    Price: 250.00
+  Ultimate_Pack:
+    NumNormalCards: 5
+    NormalCardRarity: Rare
+    NumSpecialCards: 1
+    SpecialCardRarity: Legendary
+    Price: 500.00
+
+Rarities:
+  Common:
+    Colour: "&7"
+    RewardCmd1: "eco give %player% 100"
+    RewardCmd2: "give %player% diamond 8"
+    RewardCmd3: "None"
+  Uncommon:
+    Colour: "&9"
+    RewardCmd1: "eco give %player% 200"
+    RewardCmd2: "give %player% diamond 16"
+    RewardCmd3: "None"
+  Rare:
+    Colour: "&e"
+    RewardCmd1: "eco give %player% 500"
+    RewardCmd2: "give %player% diamond 32"
+    RewardCmd3: "None"
+  Veryrare:
+    Colour: "&6"
+    RewardCmd1: "eco give %player% 1000"
+    RewardCmd2: "give %player% diamond 64"
+    RewardCmd3: "None"
+  Legendary:
+    Colour: "&a"
+    RewardCmd1: "eco give %player% 1500"
+    RewardCmd2: "give %player% diamond 64"
+    RewardCmd3: "manuadd %player% Collector"
+
+Colours:
+  # Colours for various settings of the card.
+  Series: "&a"
+  Type: "&b"
+  Info: "&e"
+  About: "&c"
+  Rarity: "&6"
+  # Booster pack colourings.
+  BoosterPackName: "&a"
+  BoosterPackLore: "&7"
+  BoosterPackNormalCards: "&e"
+  BoosterPackSpecialCards: "&6"
+  BoosterPackExtraCards: "&9"
+  # What colour should /cards list give to cards owned in decks?
+  ListHaveCard: "&a"
+  # What colour should /cards list give to shiny cards owned in decks?
+  ListHaveShinyCard: "&e&l"
+  # What colour should /cards list give to rarities that have been fully collected?
+  ListRarityComplete: "&e"
+
+Chances:
+  # Drop chances for various types of mobs.
+  Hostile-Chance: 20
+  Neutral-Chance: 5
+  Passive-Chance: 1
+  Boss-Chance: 100
+  # Should bosses always drop a certain rarity?
+  Boss-Drop: false
+  Boss-Drop-Rarity: 5
+  # Chance that, wherever a card is given, it'll be a 'shiny' version instead, if it has one.
+  Shiny-Version-Chance: 1
+  # Enter the chances for various rarities below, out of 100,000. 1 = 1 in 100,000 or 0.001%
+  # 10,000 = 10% chance, 1000 = 1% chance, 100 = 0.1% chance, 10 = 0.01% chance, 1 = 0.001% chance
+  # Chances are in descending order - make sure the chances for Common are higher than Uncommon etc.
+  # If a type is omitted from this section, the rarity won't drop at ALL from that type.
+  Common:
+    Hostile: 100000
+    Neutral: 100000
+    Passive: 100000
+  Uncommon:
+    Hostile: 20000
+    Neutral: 10000
+    Passive: 5000
+  Rare:
+    Hostile: 1000
+    Neutral: 500
+  Very Rare:
+    Hostile: 10
+    Boss: 100000
+  Legendary:
+    Hostile: 1
+    Boss: 50000
+
+DisplayNames:
+  Cards:
+    # Title placeholders:
+    # %PREFIX% (the prefix at the start of the config)
+    # %COLOUR% (rarity colour)
+    # %NAME% (card name)
+    # %COST% (card buy-price)
+    Title: "%PREFIX%%COLOUR%%NAME%"
+    ShinyTitle: "%PREFIX%%COLOUR%%SHINYPREFIX% %NAME%"
+    Series: "Series"
+    Type: "Type"
+    Info: "Info"
+    About: "About"

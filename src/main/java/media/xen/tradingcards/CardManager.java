@@ -219,17 +219,17 @@ public class CardManager {
 
 		private List<String> formatLore(){
 			List<String> lore = new ArrayList<>();
-			lore.add(plugin.cMsg(type.getColour() + type.getDisplay() + ": &f" + type.getName()));
+			lore.add(plugin.cMsg(type.getColor() + type.getDisplay() + ": &f" + type.getName()));
 			if (!"None".equals(info.getName()) && !"".equals(info.getName())) {
-				lore.add(plugin.cMsg(info.getColour() + info.getDisplay() + ":"));
+				lore.add(plugin.cMsg(info.getColor() + info.getDisplay() + ":"));
 				lore.addAll(plugin.wrapString(info.getName()));
 			} else {
-				lore.add(plugin.cMsg(info.getColour() + info.getDisplay() + ": &f" + info.getName()));
+				lore.add(plugin.cMsg(info.getColor() + info.getDisplay() + ": &f" + info.getName()));
 			}
 
-			lore.add(plugin.cMsg(series.getColour() + series.getDisplay() + ": &f" + series.getName()));
+			lore.add(plugin.cMsg(series.getColor() + series.getDisplay() + ": &f" + series.getName()));
 			if (plugin.getCardsConfig().getConfig().contains("Cards." + rarity + "." + cardName + ".About")) {
-				lore.add(plugin.cMsg(about.getColour() + about.getDisplay() + ": &f" + about.getName()));
+				lore.add(plugin.cMsg(about.getColor() + about.getDisplay() + ": &f" + about.getName()));
 			}
 
 			if (isShiny) {
@@ -268,7 +268,7 @@ public class CardManager {
 	@Data
 	public static class CardInfo {
 		private final String name;
-		private final String colour;
+		private final String color;
 		private final String display;
 	}
 }

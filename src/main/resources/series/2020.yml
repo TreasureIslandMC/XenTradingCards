@@ -1,0 +1,7 @@
+name: "2020"
+active: false
+schedule:
+  enabled: false
+  startDate: 2021-01-20 00:00
+  endDate: 2021-03-25 00:00
+cards: [cow,zombie]

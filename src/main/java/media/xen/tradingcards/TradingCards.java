@@ -612,7 +612,7 @@ public class TradingCards extends JavaPlugin implements Listener {
 	}
 
 	public void reloadAllConfig() {
-		/*File file = new File(this.getDataFolder() + File.separator + "config.yml");
+		/*File file = new File(this.getDataFolder() + File.separator + "config-old.yml");
 		if (!file.exists()) {
 			this.getConfig().options().copyDefaults(true);
 			this.saveDefaultConfig();

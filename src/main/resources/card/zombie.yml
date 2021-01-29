@@ -1,0 +1,17 @@
+Name: "Zombie"
+Series: '2020'
+Type: 'Monster'
+Has-Shiny-Version: true
+Info: 'None'
+# If vault is enabled, how much this card is worth. Set to 0 to not allow buying.
+Economy:
+  Default:
+    Buy-Price: 100.0
+    Sell-Price: 50.0
+  Common:
+    Buy-Price: 100.0
+    Sell-Price: 50.0
+  Uncommon:
+    Buy-Price: 150.0
+    Sell-Price: 70.0
+Rarities: [Common,Uncommon,Rare]

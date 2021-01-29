@@ -1,0 +1,15 @@
+rarities:
+  common: 53
+  uncommon: 25
+  rare: 15
+  epic: 5
+  legendary: 1.5
+  special: 0.5
+series:
+  2020:
+    common:
+    uncommon:
+    rare:
+    epic:
+    legendary:
+    special:
